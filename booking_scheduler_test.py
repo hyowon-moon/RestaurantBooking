@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import Mock, patch
 
 from datetime import datetime, timedelta
 
@@ -12,9 +13,10 @@ UNDER_CAPCACITY = 1
 NOT_ON_THE_HOUR = datetime.strptime("2021/03/26 09:05", "%Y/%m/%d %H:%M")
 ON_THE_HOUR = datetime.strptime("2021/03/26 09:00", "%Y/%m/%d %H:%M")
 
-CUSTOMER = Customer("Fake Name", "010-1234-5678")
-CUSTOMER_WITH_MAIL = Customer("FAKE NAME 2", "010-9999-0000", "test@test.com")
-
+CUSTOMER = Mock()
+CUSTOMER.get_email.return_value = None
+CUSTOMER_WITH_MAIL = Mock()
+CUSTOMER_WITH_MAIL.get_email.return_value = "test2@test2.com"
 SUNDAY_DATE_TIME = "2024/07/07 09:00"
 MONDAY_DATE_TIME = "2024/07/08 09:00"
 

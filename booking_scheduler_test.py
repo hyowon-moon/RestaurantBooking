@@ -6,31 +6,26 @@ from booking_scheduler import BookingScheduler
 from communication_test import TestableSmsSender, TestableMailSender
 from schedule import Customer, Schedule
 
-CUSTOMER_WITH_MAIL = Customer("FAKE NAME 2", "010-9999-0000", "test@test.com")
-
 CAPACITY_PER_HOUR = 3
-
 UNDER_CAPCACITY = 1
 
-CUSTOMER = Customer("Fake Name", "010-1234-5678")
 NOT_ON_THE_HOUR = datetime.strptime("2021/03/26 09:05", "%Y/%m/%d %H:%M")
 ON_THE_HOUR = datetime.strptime("2021/03/26 09:00", "%Y/%m/%d %H:%M")
 
+CUSTOMER = Customer("Fake Name", "010-1234-5678")
+CUSTOMER_WITH_MAIL = Customer("FAKE NAME 2", "010-9999-0000", "test@test.com")
 
-class SundayBookingScheduler(BookingScheduler):
-    def __init__(self, capacity_per_hour):
+SUNDAY_DATE_TIME = "2024/07/07 09:00"
+MONDAY_DATE_TIME = "2024/07/08 09:00"
+
+
+class TestableBookingScheduler(BookingScheduler):
+    def __init__(self, capacity_per_hour, date_time: str):
         super().__init__(capacity_per_hour)
+        self._date_time = date_time
 
     def get_now(self):
-        return datetime.strptime("2024/07/07 09:00", "%Y/%m/%d %H:%M")
-
-
-class MondayBookingScheduler(BookingScheduler):
-    def __init__(self, capacity_per_hour):
-        super().__init__(capacity_per_hour)
-
-    def get_now(self):
-        return datetime.strptime("2024/07/08 09:00", "%Y/%m/%d %H:%M")
+        return datetime.strptime(self._date_time, "%Y/%m/%d %H:%M")
 
 
 class BookingSchedulerTest(unittest.TestCase):
@@ -120,7 +115,7 @@ class BookingSchedulerTest(unittest.TestCase):
 
     def test_현재날짜가_일요일인_경우_예약불가_예외처리(self):
         # arrange
-        self.booking_scheduler = SundayBookingScheduler(CAPACITY_PER_HOUR)
+        self.booking_scheduler = TestableBookingScheduler(CAPACITY_PER_HOUR, SUNDAY_DATE_TIME)  # Sunday
 
         # act and assert
         with self.assertRaises(ValueError):
@@ -128,10 +123,9 @@ class BookingSchedulerTest(unittest.TestCase):
             self.booking_scheduler.add_schedule(new_schedule)
             self.fail()
 
-
     def test_현재날짜가_일요일이_아닌경우_예약가능(self):
         # arrange
-        self.booking_scheduler = MondayBookingScheduler(CAPACITY_PER_HOUR)
+        self.booking_scheduler = TestableBookingScheduler(CAPACITY_PER_HOUR, MONDAY_DATE_TIME)  # Monday
 
         # act
         new_schedule = Schedule(ON_THE_HOUR, UNDER_CAPCACITY, CUSTOMER_WITH_MAIL)

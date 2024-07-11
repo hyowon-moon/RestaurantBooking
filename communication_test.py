@@ -14,7 +14,7 @@ class TestableMailSender(MailSender):
     def __init__(self):
         self.__count_send_mail_is_called = 0
 
-    def send_main(self, schedule):
+    def send_mail(self, schedule):
         self.__count_send_mail_is_called += 1
 
     def get_count_send_mail_is_called(self):

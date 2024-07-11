@@ -1,6 +1,6 @@
 import unittest
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from booking_scheduler import BookingScheduler
 from schedule import Customer, Schedule
@@ -51,7 +51,17 @@ class BookingSchedulerTest(unittest.TestCase):
         self.assertEqual("Number of people is over restaurant capacity per hour", str(context.exception))
 
     def test_시간대별_인원제한이_있다_같은_시간대가_다르면_Capacity_차있어도_스케쥴_추가_성공(self):
-        pass
+        # arrange
+        schedule = Schedule(ON_THE_HOUR, CAPACITY_PER_HOUR, CUSTOMER)
+        self.booking_scheduler.add_schedule(schedule)
+
+        # act
+        different_hour = ON_THE_HOUR + timedelta(hours=1)
+        new_schedule = Schedule(different_hour, UNDER_CAPCACITY, CUSTOMER)
+        self.booking_scheduler.add_schedule(new_schedule)
+
+        # assert
+        self.assertTrue(self.booking_scheduler.has_schedule(schedule))
 
     def test_예약완료시_SMS는_무조건_발송(self):
         pass
